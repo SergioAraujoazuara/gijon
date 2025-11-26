@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+  
+
+body {
+    /* background-color: #f3f4f6; */
+    background-color: white;
+ 
+}
+
+.bg-sky-pastel-400 {
+    background-color: #4d88b5;
+}
+
+.item {
+    background-color: #f5f5f5;
+}
+
+#bottom-toolbar-container{
+    background-color: rgb(43, 71, 131);
+    border-radius: 0 0 20px 20px;
+}
+
+#right-toolbar-container{
+    display: none;
+}
+
+#left-toolbar-container{
+    display: none;
+}
+
+#bottom-toolbar-container {
+    display: none;
+}

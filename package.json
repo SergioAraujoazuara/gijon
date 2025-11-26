@@ -1,0 +1,51 @@
+{
+  "name": "sector3",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@react-pdf/renderer": "^3.4.4",
+    "browser-image-compression": "^2.0.2",
+    "emailjs-com": "^3.2.0",
+    "file-saver": "^2.0.5",
+    "firebase": "^10.8.0",
+    "groq-sdk": "^0.5.0",
+    "idb-keyval": "^6.2.2",
+    "jspdf": "^2.5.1",
+    "leaflet": "^1.9.4",
+    "openbim-components": "^1.1.5",
+    "pdf-lib": "^1.17.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-google-charts": "^4.0.1",
+    "react-icons": "^5.0.1",
+    "react-leaflet": "^4.2.1",
+    "react-router-dom": "^6.22.0",
+    "react-signature-canvas": "^1.1.0-alpha.1",
+    "react-speech-recognition": "^4.0.0",
+    "three": "^0.152.2",
+    "uuid": "^11.1.0",
+    "web-ifc": "^0.0.53"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@types/three": "^0.156.0",
+    "@vitejs/plugin-react": "^4.0.3",
+    "autoprefixer": "^10.4.17",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.34",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
+  }
+}

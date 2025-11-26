@@ -1,0 +1,60 @@
+/* Selectores reinicio */
+* {
+    box-sizing: border-box;
+}
+/* Selectores globales */
+body {
+    background-color: aliceblue;
+    height: 100%;
+
+}
+
+.bg-blue {
+    background-color: #0067ff;
+}
+/* Selectores especificos */
+.contenedor_principal {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 1280px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+header h1 {
+    font-size: 50px;
+}
+main {
+    flex: 1
+}
+.contenedor_imagenes {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    object-position: right;
+    border-radius: 20px;
+    -webkit-box-shadow: 10px 10px 5px -6px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 10px 10px 5px -6px rgba(0, 0, 0, 0.3);
+    box-shadow: 10px 10px 5px -6px rgba(0, 0, 0, 0.3);
+    ;
+}
+header,
+main,
+footer {
+    padding: 20px;
+}
+button {
+    width: 200px;
+    padding: 20px;
+}
+footer {
+    font-size: 20px;
+}

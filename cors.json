@@ -1,0 +1,9 @@
+[
+    {
+      "origin": ["http://localhost:5173", "https://andalucia-supervision.vercel.app/"],
+      "responseHeader": ["Content-Type"],
+      "method": ["GET", "POST", "PUT", "DELETE"],
+      "maxAgeSeconds": 3600
+    }
+  ]
+  

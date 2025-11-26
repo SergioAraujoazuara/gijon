@@ -1,0 +1,1695 @@
+import React, { useState, useEffect } from 'react';
+import { Document, Page, Text, View, StyleSheet, Image, pdf } from '@react-pdf/renderer';
+import { PDFDocument } from 'pdf-lib';
+
+const styles = StyleSheet.create({
+    page: {
+        flexDirection: 'column',
+        padding: 30,
+        backgroundColor: '#FFFFFF',
+    },
+    titleContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+       
+        marginBottom: 20,
+    },
+    title: {
+        fontSize: 10,
+        color: '#333333',
+        alignSelf: 'flex-start',
+    },
+    projectInfo: {
+        width: '50%',
+        textAlign: 'left',
+    },
+    imagesContainer: {
+        width: '40%',
+        textAlign: 'right',
+
+    },
+    image2: {
+        width: 100,
+        height: 50,
+    },
+    image: {
+        width: 70,
+        height: 40,
+    },
+    table: {
+        display: 'table',
+        width: 'auto',
+        borderStyle: 'solid',
+        borderColor: '#CCCCCC',
+        borderRadius: 10,
+        overflow: 'hidden',
+    },
+    tableRow: {
+        flexDirection: 'row',
+        backgroundColor: '#f9fafb', // Cambio de color a gris claro
+    },
+    tableColHeader: {
+        width: '10%',
+        height: '100%',
+        borderStyle: 'solid',
+        borderColor: '#CCCCCC',
+        backgroundColor: '#0369a1',
+        padding: 10,
+        textAlign: 'center',
+        alignSelf: 'center',
+        fontSize: 8
+    },
+    tableCol: {
+        width: '10%',
+        borderStyle: 'solid',
+        borderColor: '#CCCCCC',
+        borderTopWidth: 0, // Eliminar la línea superior para evitar duplicados
+        padding: 8,
+        textAlign: 'center',
+        alignSelf: 'center'
+    },
+    divider: {
+        borderStyle: 'solid',
+        borderColor: '#CCCCCC',
+        borderTopWidth: 1,
+        marginHorizontal: -30,
+    },
+    tableCellHeader: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: '#FFFFFF',
+    },
+    tableCell: {
+        fontSize: 10,
+        color: '#333333',
+    }
+});
+
+const Pdf_final = ({ ppi, nombreProyecto, titulo, obra, tramo, imagenPath, imagenPath2 }) => {
+    const [pdfBlob, setPdfBlob] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [additionalFiles, setAdditionalFiles] = useState([]);
+
+    useEffect(() => {
+        const doc = (
+            <Document>
+            <Page size="A3" style={styles.page} orientation="landscape">
+                <View style={styles.titleContainer}>
+                    <View style={styles.projectInfo}>
+                        <Text style={styles.title}>Nombre del Proyecto: {nombreProyecto}</Text>
+                        <Text style={styles.title}>Título: {titulo}</Text>
+                        <Text style={styles.title}>Obra: {obra}</Text>
+                        <Text style={styles.title}>Tramo: {tramo}</Text>
+                    </View>
+
+                    <View style={{ ...styles.imagesContainer, flexDirection: 'row', marginLeft:500 }}>
+                        {/* Aquí puedes agregar tus imágenes */}
+                        <Image style={{...styles.image2, marginRight:20}} src={imagenPath2} />
+                        <Image style={styles.image} src={imagenPath} />
+                    </View>
+                </View>
+
+                <View style={styles.table}>
+                    {/* Cabeceras de la tabla */}
+                    <View style={styles.tableRow}>
+                        <View style={styles.tableColHeader}><Text style={styles.tableCellHeader}>Versión</Text></View>
+                        <View style={styles.tableColHeader}><Text style={styles.tableCellHeader}>Número</Text></View>
+                        <View style={styles.tableColHeader}><Text style={styles.tableCellHeader}>Actividad</Text></View>
+                        <View style={styles.tableColHeader}><Text style={styles.tableCellHeader}>Criterio de Aceptación</Text></View>
+                        <View style={styles.tableColHeader}><Text style={styles.tableCellHeader}>Tipo de Inspección</Text></View>
+                        <View style={styles.tableColHeader}><Text style={styles.tableCellHeader}>Documentación de referencia</Text></View>
+                        <View style={styles.tableColHeader}><Text style={styles.tableCellHeader}>Punto</Text></View>
+                        <View style={styles.tableColHeader}><Text style={styles.tableCellHeader}>Responsable</Text></View>
+                        <View style={styles.tableColHeader}><Text style={styles.tableCellHeader}>Fecha</Text></View>
+                        <View style={styles.tableColHeader}><Text style={styles.tableCellHeader}>Comentarios</Text></View>
+                        <View style={styles.tableColHeader}><Text style={styles.tableCellHeader}>Estado</Text></View>
+                    </View>
+                    {/* Datos de las actividades y subactividades */}
+                    {ppi && ppi.actividades.map((actividad, index) => (
+                        <>
+                            <View style={{ ...styles.tableRow, backgroundColor: '#e5e7eb' }} key={index}>
+                                <View style={styles.tableCol}><Text style={styles.tableCell}>{actividad.numero}</Text></View>
+                                <View style={styles.tableCol}><Text style={styles.tableCell}>{actividad.actividad}</Text></View>
+                                <View style={styles.tableCol}><Text style={styles.tableCell}></Text></View>
+                                <View style={styles.tableCol}><Text style={styles.tableCell}></Text></View>
+                                <View style={styles.tableCol}><Text style={styles.tableCell}></Text></View>
+                                <View style={styles.tableCol}><Text style={styles.tableCell}></Text></View>
+                                <View style={styles.tableCol}><Text style={styles.tableCell}></Text></View>
+                                <View style={styles.tableCol}><Text style={styles.tableCell}></Text></View>
+                                <View style={styles.tableCol}><Text style={styles.tableCell}></Text></View>
+                                <View style={styles.tableCol}><Text style={styles.tableCell}></Text></View>
+                                <View style={styles.tableCol}><Text style={styles.tableCell}></Text></View>
+                            </View>
+                            {/* Línea divisoria */}
+                            <View style={styles.divider} key={`divider_${index}`} />
+                            {/* Subactividades */}
+                            {actividad.subactividades.map((sub, subIndex) => (
+                                <>
+                                    <View style={styles.tableRow} key={`sub_${index}_${subIndex}`}>
+                                        <View style={styles.tableCol}><Text style={styles.tableCell}>{sub.version}</Text></View>
+                                        <View style={styles.tableCol}><Text style={styles.tableCell}>{sub.numero}</Text></View>
+                                        <View style={styles.tableCol}><Text style={styles.tableCell}>{sub.nombre}</Text></View>
+                                        <View style={styles.tableCol}><Text style={styles.tableCell}>{sub.criterio_aceptacion}</Text></View>
+                                        <View style={styles.tableCol}><Text style={styles.tableCell}>{sub.documentacion_referencia}</Text></View>
+                                        <View style={styles.tableCol}><Text style={styles.tableCell}>{sub.tipo_inspeccion}</Text></View>
+                                        <View style={styles.tableCol}><Text style={styles.tableCell}>{sub.punto}</Text></View>
+                                        <View style={styles.tableCol}><Text style={styles.tableCell}>{sub.responsable}</Text></View>
+                                        <View style={styles.tableCol}><Text style={styles.tableCell}>{sub.fecha}</Text></View>
+                                        <View style={styles.tableCol}><Text style={styles.tableCell}>{sub.comentario}</Text></View>
+                                        <View style={styles.tableCol}>
+                                            <Text style={{ ...styles.tableCell, ...styles.centeredContent, color: sub.resultadoInspeccion === 'Apto' ? '#15803d' : '#b91c1c' }}>
+                                                {sub.resultadoInspeccion}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    {/* Línea divisoria */}
+                                    <View style={styles.divider} key={`divider_sub_${index}_${subIndex}`} />
+                                </>
+                            ))}
+                        </>
+                    ))}
+                </View>
+            </Page>
+        </Document>
+        );
+
+        const generatePdfBlob = async () => {
+            const blob = await pdf(doc).toBlob();
+            setPdfBlob(blob);
+            setLoading(false);
+        };
+
+        generatePdfBlob();
+    }, []);
+
+    const handleFileChange = (event) => {
+        setAdditionalFiles(event.target.files);
+    };
+
+    const combinePDFs = async () => {
+        if (!pdfBlob || additionalFiles.length === 0) {
+            console.error("Falta el PDF inicial o los archivos adicionales.");
+            return;
+        }
+
+        const mergedPdf = await PDFDocument.create();
+        const pdfBytes = await pdfBlob.arrayBuffer();
+        const existingPdfDoc = await PDFDocument.load(pdfBytes);
+
+        // Copiar todas las páginas del PDF inicial
+        const copiedPages = await mergedPdf.copyPages(existingPdfDoc, existingPdfDoc.getPageIndices());
+        copiedPages.forEach(page => mergedPdf.addPage(page));
+
+        // Copiar todas las páginas de los archivos adicionales
+        for (const file of additionalFiles) {
+            const newPdfBytes = await file.arrayBuffer();
+            const newPdfDoc = await PDFDocument.load(newPdfBytes);
+            const newPages = await mergedPdf.copyPages(newPdfDoc, newPdfDoc.getPageIndices());
+            newPages.forEach(page => mergedPdf.addPage(page));
+        }
+
+        const finalPdfBytes = await mergedPdf.save();
+        downloadPDF(finalPdfBytes, 'final_document.pdf');
+    };
+
+    const downloadPDF = (pdfBytes, filename) => {
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+    };
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    return (
+        <div>
+            <input type="file" accept="application/pdf" multiple onChange={handleFileChange} />
+            <button className='bg-amber-600 text-white font-medium px-4 py-2 rounded-lg'
+                onClick={combinePDFs}>
+                Combina y descarga PDF
+            </button>
+        </div>
+    );
+};
+
+export default Pdf_final;
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { db } from '../../../firebase_config';
+import { getDoc, getDocs, query, collection, where, doc, updateDoc, increment, addDoc, or } from 'firebase/firestore';
+import { GoHomeFill } from "react-icons/go";
+import { FaArrowRight } from "react-icons/fa";
+import { IoCloseCircle } from "react-icons/io5";
+import { IoMdAddCircle } from "react-icons/io";
+import { FaFilePdf } from "react-icons/fa6";
+import { FaQuestionCircle } from "react-icons/fa";
+import { FaCheckCircle } from "react-icons/fa";
+import { FcInspection } from "react-icons/fc";
+import FormularioInspeccion from '../../Components/FormularioInspeccion'
+import logo from '../assets/tpf_logo_azul.png'
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import Pdf_final from '../Pdf_final';
+import imageCompression from 'browser-image-compression';
+
+import { storage } from '../../../firebase_config'; // Asegúrate de importar storage desde tu configuración de Firebase
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
+
+function TablaPpi() {
+    const titulo = "REGISTRO DE INSPECCIÓN DE OBRA REV-1"
+
+    const imagenPath = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Adif_wordmark.svg/1200px-Adif_wordmark.svg.png"
+    const imagenPath2 = logo
+    const [nombreProyecto, setNombreProyecto] = useState(localStorage.getItem('nombre_proyecto') || '');
+    const [obra, setObra] = useState(localStorage.getItem('obra'));
+    const [tramo, setTramo] = useState(localStorage.getItem('tramo'));
+    const [observaciones, setObservaciones] = useState('');
+    const { idLote } = useParams();
+    const navigate = useNavigate();
+    const [ppi, setPpi] = useState(null);
+
+
+
+    const handleObservaciones = (nuevasObservaciones) => {
+        setObservaciones(nuevasObservaciones);
+    };
+
+
+    useEffect(() => {
+        const obtenerInspecciones = async () => {
+            try {
+                const inspeccionesRef = collection(db, "lotes", idLote, "inspecciones");
+                const querySnapshot = await getDocs(inspeccionesRef);
+
+                const inspeccionesData = querySnapshot.docs.map(doc => ({
+                    docId: doc.id, // Almacena el ID del documento generado automáticamente por Firestore
+                    ...doc.data()
+                }));
+
+                // Asegúrate de que este paso esté ajustado a cómo manejas los datos en tu aplicación
+                if (inspeccionesData.length > 0) {
+                    setPpi(inspeccionesData[0]);
+                    setPpiNombre(inspeccionesData[0].nombre) // O maneja múltiples inspecciones según sea necesario
+                } else {
+
+                    setPpi(null);
+                }
+            } catch (error) {
+                console.error('Error al obtener las inspecciones:', error);
+            }
+        };
+
+
+
+        obtenerInspecciones();
+
+    }, [idLote]); // Dependencia del efecto basada en idLote
+
+    useEffect(() => {
+
+
+    }, []);
+
+
+
+
+    const regresar = () => {
+        navigate(-1); // Regresa a la página anterior
+    };
+
+
+
+
+
+    const [seleccionApto, setSeleccionApto] = useState({});
+    const [tempSeleccion, setTempSeleccion] = useState(null);
+    const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
+    const [modal, setModal] = useState(false);
+    const [modalFormulario, setModalFormulario] = useState(false);
+    const [currentSubactividadId, setCurrentSubactividadId] = useState(null);
+
+    const [ppiNombre, setPpiNombre] = useState('');
+
+
+
+
+
+
+
+
+    const handleOpenModalFormulario = (subactividadId) => {
+        setCurrentSubactividadId(subactividadId);
+
+        // Inicializar la selección temporal con el valor actual si existe
+        const valorActual = seleccionApto[subactividadId]?.resultadoInspeccion;
+        setTempSeleccion(valorActual);
+        // Añadir aquí el reseteo de los estados necesarios
+        setComentario(''); // Resetear el comentario a un string vacío
+        setObservaciones(''); // Si también necesitas resetear observaciones o cualquier otro estado, hazlo aquí
+        setModalFormulario(true);
+    };
+
+
+
+
+    const handleCloseModal = () => {
+        setModal(false)
+        setModalFormulario(false)
+        setComentario('')
+        setResultadoInspeccion('Apto')
+
+
+    };
+
+
+    // agregar cometarios
+    const [comentario, setComentario] = useState("");
+
+    const [resultadoInspeccion, setResultadoInspeccion] = useState("Apto");
+
+    // Define la fecha, el responsable y genera la firma aquí
+    const fechaHoraActual = new Date().toLocaleString('es-ES', {
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+    });
+    const nombreResponsable = "Usuario"; // Asumiendo que tienes una forma de obtener el nombre del usuario
+
+    const firma = '9c8245e6e0b74cfccg97e8714u3234228fb4xcd2'
+
+    const marcarFormularioComoEnviado = async (idRegistroFormulario, resultadoInspeccion,) => {
+        if (!ppi || !currentSubactividadId) {
+
+            return;
+        }
+
+        // Divide el ID para obtener índices de actividad y subactividad
+        const [actividadIndex, subactividadIndex] = currentSubactividadId.split('-').slice(1).map(Number);
+
+        // Crea una copia del estado actual del PPI para modificarlo
+        let nuevoPpi = { ...ppi };
+        let subactividadSeleccionada = nuevoPpi.actividades[actividadIndex].subactividades[subactividadIndex];
+
+        // Actualiza los campos con los datos necesarios
+        subactividadSeleccionada.formularioEnviado = formulario;
+        subactividadSeleccionada.idRegistroFormulario = idRegistroFormulario;
+        subactividadSeleccionada.resultadoInspeccion = resultadoInspeccion;
+        subactividadSeleccionada.fecha = fechaHoraActual;
+        subactividadSeleccionada.responsable = nombreResponsable;
+        subactividadSeleccionada.firma = firma;
+        subactividadSeleccionada.comentario = comentario;
+
+        // Si la inspección es "Apto", incrementa el contador de actividadesAptas en el lote
+        if (resultadoInspeccion === "Apto") {
+            const loteRef = doc(db, "lotes", idLote);
+            await updateDoc(loteRef, {
+                actividadesAptas: increment(1)
+            });
+        }
+
+        // Si la inspección es No Apto, duplica la subactividad para una futura inspección
+        if (resultadoInspeccion === "No apto") {
+            let nuevaSubactividad = { ...subactividadSeleccionada };
+
+            // Eliminar o reiniciar propiedades específicas de la evaluación para la nueva subactividad
+            delete nuevaSubactividad.resultadoInspeccion;
+            delete nuevaSubactividad.enviado;
+            delete nuevaSubactividad.idRegistroFormulario;
+
+            // Restablecer los valores de Responsable, Fecha, Comentarios e Inspección
+            // Aquí asumimos que quieres restablecerlos a valores vacíos o predeterminados
+            nuevaSubactividad.responsable = '';
+            nuevaSubactividad.fecha = '';
+            nuevaSubactividad.comentario = '';
+            // Para el campo Inspección, asegúrate de restablecerlo según cómo lo manejas en tu modelo de datos
+            // Si Inspección se maneja con otro campo o de otra forma, ajusta esta línea acorde a tu implementación
+            // Por ejemplo, si 'inspeccion' es un campo booleano que indica si se ha realizado una inspección
+            nuevaSubactividad.formularioEnviado = false; // Ajusta el nombre del campo y el valor según tu caso
+
+
+            // Incrementa el número de versión de la nueva subactividad
+            if (nuevaSubactividad.version) {
+                nuevaSubactividad.version = String(parseInt(nuevaSubactividad.version) + 1);
+            } else {
+                // Si por alguna razón la subactividad original no tiene número de versión, se inicializa a 1
+                nuevaSubactividad.version = "1";
+            }
+
+            // Inserta la nueva subactividad en el PPI
+            nuevoPpi.actividades[actividadIndex].subactividades.splice(subactividadIndex + 1, 0, nuevaSubactividad);
+        }
+
+
+        // Actualiza la subactividad en el array
+        nuevoPpi.actividades[actividadIndex].subactividades[subactividadIndex] = subactividadSeleccionada;
+
+        // Llama a la función que actualiza los datos en Firestore
+        await actualizarFormularioEnFirestore(nuevoPpi);
+    };
+
+
+
+
+
+
+    const actualizarFormularioEnFirestore = async (nuevoPpi) => {
+        if (!nuevoPpi.docId) {
+            console.error("No se proporcionó docId para la actualización.");
+            return;
+        }
+
+        try {
+            // Aquí, "docId" es el ID del documento de Firestore donde se almacenan los datos del PPI.
+            const ppiRef = doc(db, "lotes", idLote, "inspecciones", nuevoPpi.docId);
+
+            // Prepara los datos que se van a actualizar. En este caso, actualizamos todo el objeto de PPI.
+            const updatedData = {
+                actividades: nuevoPpi.actividades.map(actividad => ({
+                    ...actividad,
+                    subactividades: actividad.subactividades.map(subactividad => ({
+                        ...subactividad,
+
+                    }))
+                }))
+            };
+
+            // Realiza la actualización en Firestore.
+            await updateDoc(ppiRef, updatedData);
+
+
+        } catch (error) {
+            console.error("Error al actualizar PPI en Firestore:", error);
+        }
+    };
+
+
+
+    const [modalInforme, setModalInforme] = useState(false)
+    const [modalConfirmacionInforme, setModalConfirmacionInforme] = useState(false)
+
+
+    const closeModalConfirmacion = () => {
+        setModalInforme(false)
+
+    }
+
+    const confirmarModalInforme = () => {
+        setModalConfirmacionInforme(true)
+        handleCloseModal()
+        setModalInforme(false)
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+    const [loteInfo, setLoteInfo] = useState(null); // Estado para almacenar los datos del PPI
+    const [sectorInfoLote, setSectorInfoLote] = useState(null); // Estado para almacenar los datos del PPI
+    const [cierreInspeccion, setCierreInspeccion] = useState(false); // Estado para almacenar los datos del PPI
+    const [actividadesAptas, setActividadesAptas] = useState(0); // Estado para almacenar los datos del PPI
+    const [totalSubactividades, setTotalSubActividades] = useState(0); // Estado para almacenar los datos del PPI
+    const [difActividades, setDifActividades] = useState(0); // Estado para almacenar los datos del PPI
+    useEffect(() => {
+        const obtenerLotePorId = async () => {
+
+            if (!idLote) return; // Verifica si idLote está presente
+
+            try {
+                const docRef = doc(db, "lotes", idLote); // Crea una referencia al documento usando el id
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+
+                    setLoteInfo({ id: docSnap.id, ...docSnap.data() });
+                    let loteObject = { id: docSnap.id, ...docSnap.data() };
+                    let actividadesAptas = loteObject.actividadesAptas
+                    setActividadesAptas(actividadesAptas)
+                    let totalSubactividades = loteObject.totalSubactividades
+                    setTotalSubActividades(totalSubactividades)
+                    let difActividades = totalSubactividades - actividadesAptas
+                    setDifActividades(difActividades)
+
+                    if (difActividades === 0) {
+                        setCierreInspeccion(true)
+                    }
+                    else {
+                        setCierreInspeccion(false)
+                    }
+
+                    console.log(cierreInspeccion, difActividades, '******************')
+
+
+                } else {
+                    console.log("No se encontró el lote con el ID:", idLote);
+
+                }
+            } catch (error) {
+                console.error("Error al obtener el lote:", error);
+
+            }
+        };
+
+        obtenerLotePorId();
+    }, [idLote]);
+
+    const [formulario, setFormulario] = useState(true)
+
+  
+
+    const enviarDatosARegistros = async () => {
+        // Descomponer currentSubactividadId para obtener los índices
+        const [, actividadIndex, subactividadIndex] = currentSubactividadId.split('-').map(Number);
+
+        // Acceder a la subactividad seleccionada
+        const actividadSeleccionada = ppi.actividades[actividadIndex];
+        const subactividadSeleccionada = ppi.actividades[actividadIndex].subactividades[subactividadIndex];
+
+        // Objeto que representa los datos del formulario
+        const datosFormulario = {
+            nombreProyecto,
+            obra: obra,
+            tramo: tramo,
+            ppiNombre: loteInfo.ppiNombre,
+            observaciones: observaciones,
+            comentario: comentario,
+            sector: loteInfo.sectorNombre,
+            subSector: loteInfo.subSectorNombre,
+            parte: loteInfo.parteNombre,
+            elemento: loteInfo.elementoNombre,
+            lote: loteInfo.nombre,
+            firma: firma,
+            pkInicial: loteInfo.pkInicial,
+            pkFinal: loteInfo.pkFinal,
+            actividad: actividadSeleccionada.actividad,
+            num_actividad: actividadSeleccionada.numero,
+            version_subactividad: subactividadSeleccionada.version,
+            numero_subactividad: subactividadSeleccionada.numero,
+            subactividad: subactividadSeleccionada.nombre, // Nombre de la subactividad seleccionada
+            criterio_aceptacion: subactividadSeleccionada.criterio_aceptacion,
+            documentacion_referencia: subactividadSeleccionada.documentacion_referencia,
+            tipo_inspeccion: subactividadSeleccionada.tipo_inspeccion,
+            punto: subactividadSeleccionada.punto,
+            nombre_responsable: nombreResponsable,
+            fechaHoraActual: fechaHoraActual,
+            globalId: loteInfo.globalId,
+            nombreGlobalId: loteInfo.nameBim,
+            resultadoInspeccion: resultadoInspeccion,
+            formulario: formulario,
+            imagenes: imagenes.filter(img => img != null)
+        };
+
+        try {
+            // Referencia a la colección 'registros' en Firestore
+
+            const coleccionRegistros = collection(db, "registros");
+            const docRef = await addDoc(coleccionRegistros, datosFormulario);
+            setMensajeExitoInspeccion('Inspección completada con éxito')
+
+            // Opcionalmente, cierra el modal o limpia el formulario aquí
+            setModalFormulario(false);
+
+            setObservaciones('')
+            setComentario('')
+
+            return docRef.id; // Devolver el ID del documento creado
+
+
+        } catch (e) {
+            console.error("Error al añadir documento: ", e);
+        }
+    };
+
+    const handleConfirmarEnviotablaPpi = async () => {
+        // Aquí llamarías a la función que realmente envía los datos del formulario
+        await handelEnviarFormulario();
+        setMostrarConfirmacion(false);
+        setModalInforme(false);
+
+        setComentario('')
+        // Esperar un poco antes de mostrar el modal de éxito para asegurar que los modales anteriores se han cerrado
+        setTimeout(() => {
+            setModalExito(true);
+
+
+        }, 300); // Ajusta el tiempo según sea necesario
+    };
+
+    const handleConfirmarEnvioPdf = async () => {
+        // Aquí llamarías a la función que realmente envía los datos del formulario
+        setMostrarConfirmacion(false);
+        setModalFormulario(false);
+        setModalConfirmacionInforme(false)
+
+
+
+
+        // Esperar un poco antes de mostrar el modal de éxito para asegurar que los modales anteriores se han cerrado
+        setTimeout(() => {
+            setModalExito(true);
+
+        }, 300); // Ajusta el tiempo según sea necesario
+    };
+
+
+
+
+
+
+    const handelEnviarFormulario = async () => {
+        const idRegistroFormulario = await enviarDatosARegistros();
+        if (idRegistroFormulario) {
+            await marcarFormularioComoEnviado(idRegistroFormulario, resultadoInspeccion);
+
+        }
+    };
+
+    const [mensajeExitoInspeccion, setMensajeExitoInspeccion] = useState('')
+    const [modalExito, setModalExito] = useState(false)
+
+    const [documentoFormulario, setDocumentoFormulario] = useState(null)
+    const [modalRecuperarFormulario, setModalRecuperarFormulario] = useState(false)
+
+    const handleMostrarIdRegistro = async (subactividadId) => {
+        const [actividadIndex, subactividadIndex] = subactividadId.split('-').slice(1).map(Number);
+        const subactividadSeleccionada = ppi.actividades[actividadIndex].subactividades[subactividadIndex];
+        const idRegistroFormulario = subactividadSeleccionada.idRegistroFormulario;
+
+        // Asegúrate de que existe un id antes de intentar recuperar el documento
+        if (idRegistroFormulario) {
+            try {
+                // Obtener la referencia del documento en la colección de registros
+                const docRef = doc(db, "registros", idRegistroFormulario);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    setDocumentoFormulario(docSnap.data())
+                    setModalRecuperarFormulario(true)
+
+                } else {
+                    console.log("No se encontró el documento con el ID:", idRegistroFormulario);
+                }
+            } catch (error) {
+                console.error("Error al obtener el documento:", error);
+            }
+        } else {
+            console.log("No se proporcionó un idRegistroFormulario válido.");
+        }
+    };
+
+    const cerrarModalYLimpiarDatos = () => {
+        setDocumentoFormulario('')
+        setModalRecuperarFormulario(false)
+    }
+
+
+
+
+
+
+
+
+    const generatePDF = async () => {
+        const pdfDoc = await PDFDocument.create();
+        let currentPage = pdfDoc.addPage([595, 842]); // Inicializa la primera página
+        let currentY = currentPage.getSize().height; // Inicializa la coordenada Y actual
+
+
+
+        const { height } = currentPage.getSize();
+
+        // Funciones auxiliares
+        const blackColor = rgb(0, 0, 0); // Color negro
+        const greenColor = hexToRgb("#15803d")
+        const redColor = hexToRgb("#b91c1c")
+        const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+        // Función para añadir texto y calcular el espacio vertical usado
+        const addText = (text, x, y, fontSize, font, currentPage, color = blackColor, maxWidth = 350, newX = 50) => {
+            const words = text.split(' ');
+            let currentLine = '';
+            let currentY = y;
+            let currentX = x; // Almacenar la coordenada X actual
+
+            words.forEach(word => {
+                let testLine = currentLine + word + " ";
+                let testWidth = font.widthOfTextAtSize(testLine, fontSize);
+
+                // Verifica si la línea de prueba es más larga que el ancho máximo permitido
+                if (testWidth > maxWidth) {
+                    // Dibuja la línea actual si no está vacía
+                    if (currentLine !== '') {
+                        currentPage.drawText(currentLine, { x: currentX, y: currentY, size: fontSize, font, color });
+                        currentLine = ''; // Reinicia la línea actual
+                        currentY -= fontSize * 1.8; // Ajusta la posición Y para la nueva línea
+                        currentX = newX; // Actualiza la coordenada X para la nueva línea
+                    }
+                    // Verifica si la posición Y actual es menos que la altura mínima requerida para una nueva línea
+                    if (currentY < fontSize * 1.4) {
+                        currentPage = pdfDoc.addPage([595, 842]); // Añade una nueva página
+                        currentY = currentPage.getSize().height - fontSize * 1.8; // Restablece la posición Y en la nueva página
+                        currentX = x; // Restablece la coordenada X en el margen original
+                    }
+                    currentLine = word + ' '; // Inicia una nueva línea con la palabra actual
+                } else {
+                    currentLine = testLine; // Agrega la palabra a la línea actual
+                }
+            });
+
+            // Dibuja cualquier texto restante que no haya sido agregado todavía
+            if (currentLine !== '') {
+                currentPage.drawText(currentLine, { x: currentX, y: currentY, size: fontSize, font, color });
+            }
+
+            return { lastY: currentY, page: currentPage };
+        };
+
+
+
+
+        function hexToRgb(hex) {
+            // Asegurarse de que el hex tiene el formato correcto
+            hex = hex.replace("#", "");
+            if (hex.length === 3) {
+                hex = hex.split('').map((hex) => {
+                    return hex + hex;
+                }).join('');
+            }
+
+            // Convertir hex a rgb
+            const r = parseInt(hex.substring(0, 2), 16) / 255;
+            const g = parseInt(hex.substring(2, 4), 16) / 255;
+            const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+            return rgb(r, g, b);
+        }
+
+        const addHorizontalLine = (x1, y, x2, thickness, hexColor = "#000000") => {
+            const color = hexToRgb(hexColor);
+            currentPage.drawLine({
+                start: { x: x1, y },
+                end: { x: x2, y },
+                thickness: thickness,
+                color: color,
+            });
+        };
+
+
+        // Función para agregar imágenes al PDF
+        const embedImage = async (imagePath, x, y, width, height) => {
+            const imageBytes = await fetch(imagePath).then(res => res.arrayBuffer());
+            const image = await pdfDoc.embedPng(imageBytes);
+            currentPage.drawImage(image, {
+                x,
+                y,
+                width,
+                height,
+            });
+        };
+
+        const l = 'Estlíneasnecesitar múltiples líneas Estlíneasnecesitar múltiples líneas Estlíneasnecesitar múltiples líneas Estlíneasnecesitar múltiples líneas Estlíneasnecesitar múltiples líneas Estlíneasnecesitar múltiples líneas Estlíneasnecesitar múltiples líneas Estlíneasnecesitar múltiples líneas Estlíneasnecesitar múltiples líneas Estlíneasnecesitar múltiples líneas Estlíneasnecesitar múltiples líneas Estlíneasnecesitar múltiples líneas Estlíneasnecesitar múltiples líneas Estlíneasnecesitar múltiples líneas Estlíneasnecesitar múltiples líneas ';
+
+        // Agregar imágenes al lado del nombre del proyecto
+        await embedImage(imagenPath2, 380, height - 58, 80, 45); // Ajusta las coordenadas y dimensiones según sea necesario
+        await embedImage(imagenPath, 490, height - 55, 70, 35); // Ajusta las coordenadas y dimensiones según sea necesario
+
+
+        // Primero, asegurémonos de que todos los elementos anteriores estén correctamente posicionados
+        let result = addText(titulo, 40, currentY - 35, 12, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(nombreProyecto, 40, currentY - 15, 12, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        addHorizontalLine(40, currentY - 11, 555, 1, "#000000", currentPage);
+
+        result = addText(documentoFormulario.obra, 50, currentY - 35, 12, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(documentoFormulario.tramo, 50, currentY - 15, 12, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        addHorizontalLine(40, currentY - 40, 555, 30, "#e2e8f0", currentPage);
+
+        result = addText("Trazabilidad: ", 50, currentY - 44, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Pk inicial: ", 50, currentY - 30, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(documentoFormulario.pkInicial, 105, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Pk final: ", 50, currentY - 20, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(documentoFormulario.pkFinal, 95, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Sector: ", 50, currentY - 20, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(documentoFormulario.sector, 95, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Sub sector: ", 50, currentY - 20, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(documentoFormulario.subSector, 115, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Parte: ", 50, currentY - 20, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(documentoFormulario.parte, 85, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Elemento: ", 50, currentY - 20, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(documentoFormulario.elemento, 110, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Lote: ", 50, currentY - 20, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(documentoFormulario.lote, 85, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Nombre modelo: ", 50, currentY - 20, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(documentoFormulario.nombreGlobalId, 145, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("GlobalID: ", 50, currentY - 20, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(documentoFormulario.globalId, 105, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+
+
+
+
+        addHorizontalLine(40, currentY - 40, 555, 30, "#e2e8f0", currentPage);
+
+        result = addText("Inspección: ", 50, currentY - 44, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Actividad: ", 50, currentY - 30, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(`${documentoFormulario.num_actividad}. ${documentoFormulario.actividad}`, 111, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Sub Actividad: ", 50, currentY - 20, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(`(V-${documentoFormulario.version_subactividad}) ${documentoFormulario.numero_subactividad}. ${documentoFormulario.subactividad}`, 135, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Criterio aceptación: ", 50, currentY - 20, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(`${documentoFormulario.criterio_aceptacion}`, 160, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Documentación de referencia: ", 50, currentY - 20, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(`${documentoFormulario.documentacion_referencia}`, 210, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Tipo de inspección: ", 50, currentY - 20, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(`${documentoFormulario.tipo_inspeccion}`, 160, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Punto: ", 50, currentY - 20, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(`${documentoFormulario.punto}`, 90, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Fecha inspección: ", 50, currentY - 20, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(`${documentoFormulario.fechaHoraActual}`, 150, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        addHorizontalLine(40, currentY - 40, 555, 30, "#e2e8f0", currentPage);
+
+        result = addText("Comentarios: ", 50, currentY - 44, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(`${documentoFormulario.observaciones}`, 50, currentY - 30, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        addHorizontalLine(40, currentY - 40, 555, 30, "#e2e8f0", currentPage);
+
+        result = addText("Inspección: ", 50, currentY - 44, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+
+
+        result = addText("Responsable: ", 50, currentY - 30, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(`${documentoFormulario.nombre_responsable}`, 135, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Firma: ", 50, currentY - 20, 11, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText(`${documentoFormulario.firma}`, 95, currentY, 11, regularFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        result = addText("Resultado: ", 50, currentY - 20, 14, boldFont, currentPage);
+        currentPage = result.page;
+        currentY = result.lastY;
+
+        // Determinar el color del texto según el resultado
+        let color = blackColor; // Color predeterminado: negro
+        if (documentoFormulario.resultadoInspeccion === "Apto") {
+            color = greenColor; // Verde oscuro
+        } else if (documentoFormulario.resultadoInspeccion === "No apto") {
+            color = redColor; // Rojo
+        }
+
+
+
+        // Cargar y agregar la flecha verde si el resultado es "Apto"
+        if (documentoFormulario.resultadoInspeccion === "Apto") {
+            const arrowPath = 'data:image/png;base64,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'; // Cambia esto por la ruta real de tu imagen
+            await embedImage(arrowPath, 130, currentY - 5, 15, 15); // Ajusta las coordenadas y el tamaño según sea necesario
+        }
+
+        // Agregar el texto con el color determinado
+        result = addText(documentoFormulario.resultadoInspeccion, 145, currentY, 14, boldFont, currentPage, color);
+
+        // Función para agregar imágenes Base64 al PDF
+        const embedBase64Image = async (base64Image, x, y, width, height) => {
+            const base64String = base64Image.split(';base64,').pop(); // Extraer solo la parte Base64 sin el encabezado MIME
+            const imageBytes = base64ToArrayBuffer(base64String);
+            const image = await pdfDoc.embedPng(imageBytes);
+            currentPage.drawImage(image, {
+                x: x,
+                y: y - height, // Ajusta la posición y porque en PDFLib la posición y es desde la parte inferior
+                width: width,
+                height: height,
+            });
+        };
+
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64); // Decodificar base64 a string binario
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        // Verificar si hay imágenes para añadir y necesitan una página nueva
+        if (documentoFormulario.imagen || documentoFormulario.imagen2) {
+            // Crear una nueva página específicamente para las imágenes
+            currentPage = pdfDoc.addPage([595, 842]);
+            currentY = currentPage.getSize().height;
+
+            // Agregar imágenes al lado del nombre del proyecto
+            await embedImage(imagenPath2, 380, height - 58, 80, 45); // Ajusta las coordenadas y dimensiones según sea necesario
+            await embedImage(imagenPath, 490, height - 55, 70, 35); // Ajusta las coordenadas y dimensiones según sea necesario
+
+
+            // Primero, asegurémonos de que todos los elementos anteriores estén correctamente posicionados
+            let result = addText(titulo, 40, currentY - 35, 12, boldFont, currentPage);
+            currentPage = result.page;
+            currentY = result.lastY;
+
+            result = addText(nombreProyecto, 40, currentY - 15, 12, boldFont, currentPage);
+            currentPage = result.page;
+            currentY = result.lastY;
+
+            addHorizontalLine(40, currentY - 11, 555, 1, "#000000", currentPage);
+
+            addHorizontalLine(40, currentY - 50, 555, 30, "#e2e8f0", currentPage);
+
+            result = addText("Imagenes adjuntas: ", 50, currentY - 53, 11, boldFont, currentPage);
+            currentPage = result.page;
+            currentY = result.lastY;
+
+            // Agregar la primera imagen si existe
+            if (documentoFormulario.imagenes[0]) {
+                await embedBase64Image(documentoFormulario.imagen, 50, currentY - 40, 400, 300);
+                currentY -= 320;  // Ajustar el currentY para la siguiente imagen, incluyendo un espacio adicional
+            }
+
+            // Agregar la segunda imagen si existe
+            if (documentoFormulario.imagenes[1]) {
+                await embedBase64Image(documentoFormulario.imagen2, 50, currentY - 40, 400, 300);
+            }
+        }
+
+
+        // Continuar con el guardado y descarga del PDF, etc.
+
+
+        // Guardar y descargar PDF
+        const pdfBytes = await pdfDoc.save();
+        const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = `${obra}_${ppi}`;
+        link.click();
+        URL.revokeObjectURL(pdfUrl);
+
+        // Función para cerrar modal y limpiar datos si es necesario
+        cerrarModalYLimpiarDatos();
+    };
+
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [allowPdfGeneration, setAllowPdfGeneration] = useState(false);
+
+
+    //! ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const [imagen, setImagen] = useState(null);
+    const [imagen2, setImagen2] = useState(null);
+
+
+
+    const handleUploadImage = async (file) => {
+        if (!file) return;
+
+        const storageRef = ref(storage, `images/${file.name}`);
+        try {
+            const snapshot = await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(snapshot.ref);
+            return downloadURL;
+        } catch (error) {
+            console.error('Error uploading image: ', error);
+        }
+    };
+
+    const [imagenes, setImagenes] = useState([null, null]);
+
+    const addImageField = () => {
+        // Agrega un nuevo campo vacío (null) al array de imágenes solo si se necesita más
+        setImagenes([...imagenes, null]);
+    };
+
+    const handleImageChange = async (event, index) => {
+        const file = event.target.files[0];
+        if (file) {
+            const imageUrl = await handleUploadImage(file);
+            if (imageUrl) {
+                // Crea una copia del array, actualiza el URL en la posición correspondiente y actualiza el estado
+                const updatedImages = [...imagenes];
+                updatedImages[index] = imageUrl;
+                setImagenes(updatedImages);
+            }
+        }
+    };
+
+
+
+    //! Cierre de inspeccion ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    useEffect(() => {
+        console.log(loteInfo, '******')
+    }, [idLote])
+
+    return (
+        <div className='min-h-screen px-14 py-5 text-gray-500 text-sm'>
+
+            <div className='flex gap-2 items-center justify-between bg-white px-5 py-3 rounded rounded-xl shadow-md text-base'>
+
+                <div className='flex items-center gap-2'>
+                    <GoHomeFill style={{ width: 15, height: 15, fill: '#d97706' }} />
+                    <Link to={'/'}>
+                        <h1 className=' text-gray-500'>Inicio</h1>
+                    </Link>
+
+                    <FaArrowRight style={{ width: 15, height: 15, fill: '#d97706' }} />
+
+                    <h1 className='cursor-pointer text-gray-500' onClick={regresar}>Elementos</h1>
+
+                    <FaArrowRight style={{ width: 15, height: 15, fill: '#d97706' }} />
+                    <Link to={'#'}>
+                        <h1 className='font-medium text-amber-600'>Ppi: {ppiNombre}</h1>
+                    </Link>
+                </div>
+            </div>
+
+
+
+
+            <div className='flex gap-3 flex-col mt-5 bg-white p-8 rounded-xl shadow-md'>
+                <div className="w-full rounded-xl overflow-x-auto">
+                    <div>
+                        <div className="w-full bg-gray-300 text-gray-600 text-sm font-medium py-3 px-3 grid grid-cols-24">
+                            <div className='col-span-1'>Versión</div>
+                            <div className='col-span-1'>Nº</div>
+
+                            <div className="col-span-3">Actividad</div>
+                            <div className="col-span-4">Criterio de aceptación</div>
+                            <div className="col-span-2 text-center">Documentación de referencia</div>
+                            <div className="col-span-2 text-center">Tipo de inspección</div>
+                            <div className="col-span-1 text-center">Punto</div>
+                            <div className="col-span-2 text-center">Responsable</div>
+                            <div className="col-span-2 text-center">Fecha</div>
+                            <div className="col-span-3 text-center">Comentarios</div>
+                            {/* <div className="col-span-2 text-center">Estatus</div> */}
+                            {/* <div className="col-span-1 text-center">Inspección</div> */}
+                            <div className="col-span-2 text-center">Estado</div>
+                            <div className="col-span-1 text-center">Informe</div>
+
+                        </div>
+
+
+                        <div>
+                            {ppi && ppi.actividades.map((actividad, indexActividad) => [
+                                // Row for activity name
+                                <div key={`actividad-${indexActividad}`} className="bg-gray-200 grid grid-cols-24 items-center px-3 py-3 border-b border-gray-200 text-sm font-medium">
+                                    <div className="col-span-1">
+
+                                        (V)
+
+                                    </div>
+                                    <div className="col-span-1">
+
+                                        {actividad.numero}
+
+                                    </div>
+                                    <div className="col-span-22">
+
+                                        {actividad.actividad}
+
+                                    </div>
+
+                                </div>,
+                                // Rows for subactividades
+                                ...actividad.subactividades.map((subactividad, indexSubactividad) => (
+                                    <div key={`subactividad-${indexActividad}-${indexSubactividad}`} className="grid grid-cols-24 items-center border-b border-gray-200 text-sm">
+                                        <div className="col-span-1 px-3 py-5 ">
+                                            V-{subactividad.version}  {/* Combina el número de actividad y el índice de subactividad */}
+                                        </div>
+                                        <div className="col-span-1 px-3 py-5 ">
+                                            {subactividad.numero} {/* Combina el número de actividad y el índice de subactividad */}
+                                        </div>
+
+                                        <div className="col-span-3 px-3 py-5">
+                                            {subactividad.nombre}
+                                        </div>
+
+                                        <div className="col-span-4 px-3 py-5">
+                                            {subactividad.criterio_aceptacion}
+                                        </div>
+                                        <div className="col-span-2 px-3 py-5 text-center">
+                                            {subactividad.documentacion_referencia}
+                                        </div>
+                                        <div className="col-span-2 px-3 py-5 text-center">
+                                            {subactividad.tipo_inspeccion}
+                                        </div>
+                                        <div className="col-span-1 px-3 py-5 text-center">
+                                            {subactividad.punto}
+                                        </div>
+
+
+
+
+                                        <div className="col-span-2 px-3 py-5 text-center">
+                                            {subactividad.responsable || ''}
+                                        </div>
+                                        <div className="col-span-2 px-5 py-5 text-center">
+                                            {/* Aquí asumo que quieres mostrar la fecha en esta columna, ajusta según sea necesario */}
+                                            {subactividad.fecha || ''}
+                                        </div>
+                                        <div className="col-span-3 px-5 py-5 text-center">
+                                            {subactividad.comentario || ''}
+                                        </div>
+
+
+
+                                        <div className="col-span-2 px-5 py-5 bg-white flex justify-center cursor-pointer" >
+                                            {subactividad.resultadoInspeccion ? (
+                                                subactividad.resultadoInspeccion === "Apto" ? (
+                                                    <span
+
+                                                        className="w-full font-bold text-lg p-2 rounded  text-center text-green-500 cursor-pointer">
+                                                        Apto
+
+                                                    </span>
+                                                ) : subactividad.resultadoInspeccion === "No apto" ? (
+                                                    <span
+
+                                                        className="w-full font-bold text-lg p-2 rounded w-full text-center text-red-600 cursor-pointer">
+                                                        No apto
+                                                    </span>
+                                                ) : (
+                                                    <span
+                                                        onClick={() => handleOpenModalFormulario(`apto-${indexActividad}-${indexSubactividad}`)}
+                                                        className="w-full font-bold text-medium text-3xl p-2 rounded  w-full flex justify-center cursor-pointer">
+                                                        <IoMdAddCircle />
+                                                    </span>
+                                                )
+                                            ) : (
+                                                <span
+                                                    onClick={() => handleOpenModalFormulario(`apto-${indexActividad}-${indexSubactividad}`)}
+                                                    className="w-full font-bold text-medium text-3xl p-2 rounded  w-full flex justify-center cursor-pointer">
+                                                    <IoMdAddCircle />
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div className="col-span-1 px-2 py-5 bg-white flex justify-start cursor-pointer" >
+                                            {subactividad.formularioEnviado ? (
+
+                                                <p
+                                                    onClick={() => handleMostrarIdRegistro(`apto-${indexActividad}-${indexSubactividad}`)}
+                                                    className='text-2xl'><FaFilePdf /></p>
+                                            ) : null}
+                                        </div>
+
+
+
+
+
+
+                                    </div>
+                                ))
+                            ])}
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div className='bg-white px-8 py-4 rounded-xl mt-4'>
+                {actividadesAptas && (
+                    <>
+                        <div className='flex gap-3 items-center text-lg'>
+
+                            <div>
+                                <p className='font-bold'>Inspecciones aptas: <span className='font-normal'>{actividadesAptas}</span></p>
+                            </div>
+                            {'/'}
+                            <div>
+                                <p className='font-bold'>Inspecciones totales: <span className='font-normal'>{totalSubactividades}</span></p>
+                            </div>
+                            <div className='ms-10'>
+                                {difActividades === 0 && (
+                                    <button
+                                        onClick={() => setShowConfirmModal(true)}
+                                        className="bg-amber-600 text-white font-bold py-2 px-4 rounded"
+                                    >
+                                        <p className='flex gap-2 items-center'><span><FaFilePdf /></span>Cerrar inspección</p>
+                                    </button>
+                                )
+                                }
+                            </div>
+
+                        </div>
+
+                    </>
+
+
+                )}
+            </div>
+
+
+            {modalFormulario && (
+                <div className="fixed inset-0 z-50 overflow-auto flex justify-center items-center p-11">
+                    <div className="modal-overlay absolute w-full h-full bg-gray-800 opacity-90"></div>
+
+                    <div className="mx-auto w-[500px] h-800px] modal-container bg-white mx-auto rounded-lg shadow-lg z-50 overflow-y-auto px-12 py-8"
+                    >
+                        <button
+                            onClick={handleCloseModal}
+                            className="text-3xl w-full flex justify-end items-center text-gray-500 hover:text-gray-700 transition-colors duration-300">
+                            <IoCloseCircle />
+                        </button>
+
+                        <div className="my-6">
+                            <label htmlFor="resultadoInspeccion" className="block text-2xl font-bold text-gray-500 mb-4 flex items-center gap-2">
+                                <span className='text-3xl'></span> Resultado de la inspección:
+                            </label>
+                            <div className="block w-full py-2 text-base p-2 border-gray-300 focus:outline-none focus:ring-gray-500  sm:text-sm rounded-md">
+                                {/* Opción Apto */}
+                                <div>
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            name="resultadoInspeccion"
+                                            value="Apto"
+                                            checked={resultadoInspeccion === "Apto"}
+                                            onChange={(e) => setResultadoInspeccion(e.target.value)}
+                                            className="form-radio"
+                                        />
+                                        <span className="ml-2">Apto</span>
+                                    </label>
+                                </div>
+
+                                {/* Opción No apto */}
+                                <div>
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            name="resultadoInspeccion"
+                                            value="No apto"
+                                            checked={resultadoInspeccion === "No apto"}
+                                            onChange={(e) => setResultadoInspeccion(e.target.value)}
+                                            className="form-radio"
+                                        />
+                                        <span className="ml-2">No apto</span>
+                                    </label>
+                                </div>
+
+                                <div className="my-4">
+                                    <label htmlFor="comentario" className="block text-gray-500 text-sm font-bold mb-2">Comentarios de la inspección</label>
+                                    <textarea id="comentario" value={comentario} onChange={(e) => setComentario(e.target.value)} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                                </div>
+                                
+
+
+                                <div className="mb-4 mt-4">
+            {imagenes.map((imagen, index) => (
+                <div key={index}>
+                    <label htmlFor={`imagen-${index}`} className="block text-gray-500 text-sm font-bold mb-2">
+                        Imagen {index + 1}
+                    </label>
+                    <input
+                        type="file"
+                        id={`imagen-${index}`}
+                        accept="image/*"
+                        onChange={(e) => handleImageChange(e, index)}
+                        className="rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                </div>
+            ))}
+            <button onClick={addImageField} className="mt-2 text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Agregar más imágenes
+            </button>
+        </div>
+
+
+
+
+                            </div>
+                        </div>
+
+
+                        <FormularioInspeccion
+                            setModalFormulario={setModalFormulario}
+                            modalFormulario={modalFormulario}
+                            currentSubactividadId={currentSubactividadId}
+                            ppiSelected={ppi}
+                            marcarFormularioComoEnviado={marcarFormularioComoEnviado}
+                            actualizarFormularioEnFirestore={actualizarFormularioEnFirestore}
+                            resultadoInspeccion={resultadoInspeccion}
+                            comentario={comentario}
+                            firma={firma}
+
+                            fechaHoraActual={fechaHoraActual}
+                            handleCloseModal={handleCloseModal}
+                            ppiNombre={ppiNombre}
+                            nombreResponsable={nombreResponsable}
+
+                            setResultadoInspeccion={setResultadoInspeccion}
+                            enviarDatosARegistros={enviarDatosARegistros}
+
+                            setModalConfirmacionInforme={setModalConfirmacionInforme}
+
+                            handleConfirmarEnvioPdf={handleConfirmarEnvioPdf}
+                            setMensajeExitoInspeccion={setMensajeExitoInspeccion}
+                            handleConfirmarEnviotablaPpi={handleConfirmarEnviotablaPpi}
+                            onObservaciones={handleObservaciones}
+
+
+                        />
+
+
+
+
+
+                    </div>
+
+                </div>
+            )}
+
+            {modalInforme && (
+                <div className="fixed inset-0 z-50 overflow-auto flex justify-center items-center p-11">
+                    <div className="modal-overlay absolute w-full h-full bg-gray-800 opacity-90"></div>
+
+                    <div className="mx-auto w-[700px]  modal-container bg-white mx-auto rounded-lg shadow-lg z-50 overflow-y-auto p-8"
+                    >
+                        <button
+                            onClick={closeModalConfirmacion}
+                            className="text-3xl w-full flex justify-end items-center text-gray-500 hover:text-gray-700 transition-colors duration-300 mb-5">
+                            <IoCloseCircle />
+                        </button>
+
+                        <p className='text-xl font-medium flex gap-2 mb-11 items-center'><p className='text-2xl'><FaQuestionCircle /></p> ¿Quieres generar un informe en Pdf?</p>
+
+
+                        <div className='flex items-center gap-5 mt-5'>
+                            <button className='bg-sky-600 hover:bg-sky-700 px-4 py-3 rounded-md shadow-md text-white font-medium flex gap-2 items-center'
+                                onClick={() => {
+                                    confirmarModalInforme()
+                                    crearVariableFormularioTrue()
+                                }}><p className='text-xl'><FaFilePdf /></p>Si, generar informe</button>
+                            <button
+                                onClick={handleConfirmarEnviotablaPpi}
+                                className="bg-gray-500 hover:bg-gray-600 text-white rounded-md shadow-md font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline"
+                            >
+                                No, realizar únicamente la inspección
+                            </button>
+
+                        </div>
+
+
+
+
+
+                    </div>
+
+                </div>
+            )}
+
+            {modalConfirmacionInforme && (
+                <div className="fixed inset-0 z-50 overflow-auto flex justify-center items-center p-11">
+                    <div className="modal-overlay absolute w-full h-full bg-gray-800 opacity-90"></div>
+
+                    <div className="mx-auto w-[700px]  modal-container bg-white mx-auto rounded-lg shadow-lg z-50 overflow-y-auto p-8"
+                    >
+                        <button
+                            onClick={() => setModalConfirmacionInforme(false)}
+                            className="text-3xl w-full flex justify-end items-center text-gray-500 hover:text-gray-700 transition-colors duration-300">
+                            <IoCloseCircle />
+                        </button>
+
+                        <FormularioInspeccion
+                            setModalFormulario={setModalFormulario}
+                            modalFormulario={modalFormulario}
+                            currentSubactividadId={currentSubactividadId}
+                            ppiSelected={ppi}
+                            marcarFormularioComoEnviado={marcarFormularioComoEnviado}
+                            actualizarFormularioEnFirestore={actualizarFormularioEnFirestore}
+                            resultadoInspeccion={resultadoInspeccion}
+                            comentario={comentario}
+                            firma={firma}
+
+                            fechaHoraActual={fechaHoraActual}
+                            handleCloseModal={handleCloseModal}
+                            ppiNombre={ppiNombre}
+                            nombreResponsable={nombreResponsable}
+
+                            setResultadoInspeccion={setResultadoInspeccion}
+
+
+                            setModalConfirmacionInforme={setModalConfirmacionInforme}
+
+                            handleConfirmarEnvioPdf={handleConfirmarEnvioPdf}
+                            setMensajeExitoInspeccion={setMensajeExitoInspeccion}
+                            formulario={formulario}
+                            setComentario={setComentario}
+
+                        />
+
+
+
+
+
+                    </div>
+
+                </div>
+            )}
+
+            {modalExito && (
+                <div className="fixed inset-0 z-50 overflow-auto flex justify-center items-center p-11">
+                    <div className="modal-overlay absolute w-full h-full bg-gray-800 opacity-90"></div>
+
+                    <div className="mx-auto w-[400px]  modal-container bg-white mx-auto rounded-lg shadow-lg z-50 overflow-y-auto p-8 text-center flex flex-col gap-5 items-center"
+                    >
+                        <button
+                            onClick={() => setModalExito(false)}
+                            className="text-3xl w-full flex justify-end items-center text-gray-500 hover:text-gray-700 transition-colors duration-300">
+                            <IoCloseCircle />
+                        </button>
+
+                        <p className='text-teal-500 font-bold text-5xl'><FaCheckCircle /></p>
+
+                        <p className='text-xl font-bold'>{mensajeExitoInspeccion}</p>
+
+
+
+                    </div>
+
+                </div>
+            )}
+
+            {modalRecuperarFormulario && (
+                <div className="fixed inset-0 z-50 overflow-auto flex justify-center items-center p-11">
+                    <div className="modal-overlay absolute w-full h-full bg-gray-800 opacity-90"></div>
+
+                    <div className="mx-auto w-[400px]  modal-container bg-white mx-auto rounded-lg shadow-lg z-50 overflow-y-auto p-8 text-center flex flex-col gap-5 items-center"
+                    >
+                        <button
+                            onClick={cerrarModalYLimpiarDatos}
+                            className="text-3xl w-full flex justify-end items-center text-gray-500 hover:text-gray-700 transition-colors duration-300">
+                            <IoCloseCircle />
+                        </button>
+
+                        <p className='text-gray-500 font-bold text-5xl'><FaFilePdf /></p>
+
+                        <p className='text-gray-500 font-bold text-xl'>¿Imprimir el informe?</p>
+                        <div className='flex gap-5'>
+                            <button className='bg-sky-600 hover:bg-sky-700 px-4 py-3 rounded-md shadow-md text-white font-medium flex gap-2 items-center' onClick={generatePDF}>Si</button>
+                            <button className='bg-gray-500 hover:bg-gray-600 px-4 py-3 rounded-md shadow-md text-white font-medium flex gap-2 items-center' onClick={cerrarModalYLimpiarDatos}>Cancelar</button>
+                        </div>
+                    </div>
+
+                </div>
+            )}
+
+
+            {showConfirmModal && (
+                <div className="fixed inset-0 bg-gray-600 text-gray-500 bg-opacity-50 flex justify-center items-center">
+                    <div className="bg-white p-10 pb-12  rounded-lg shadow-lg max-w-xl mx-auto">
+                        <div className='text-center flex flex-col items-start gap-1'>
+                            <button
+                                onClick={() => {
+                                    setAllowPdfGeneration(false);
+                                    setShowConfirmModal(false);
+
+                                    ; // Cerrar el modal
+                                }}
+                                className="text-3xl w-full flex justify-end items-center text-gray-500 hover:text-gray-700 transition-colors duration-300 mb-2">
+                                <IoCloseCircle />
+                            </button>
+
+                            <h2 className="text-xl font-semibold flex gap-1 items-center text-left"><span className='text-4xl'><FcInspection /></span>¿Quieres terminar la inspección?</h2>
+
+                        </div>
+
+                        <div className='flex mt-10'>
+                            <Pdf_final
+                                fileName="ejemplo.pdf"
+                                ppi={ppi}
+                                nombreProyecto={nombreProyecto}
+                                obra={obra}
+                                tramo={tramo}
+                                titulo={titulo}
+                                imagenPath={imagenPath}
+                                imagenPath2={imagenPath2}
+                                allowPdfGeneration={allowPdfGeneration}
+                                setAllowPdfGeneration={setAllowPdfGeneration}
+                                setShowConfirmModal={setShowConfirmModal}
+                            />
+                        </div>
+
+
+                    </div>
+                </div>
+            )}
+
+
+
+
+        </div>
+
+
+    );
+}
+
+export default TablaPpi;
+
+
+
+
+

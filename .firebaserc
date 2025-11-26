@@ -1,0 +1,10 @@
+{
+  "projects": {
+    "inspeccion": "seguridadsalud-60b15",
+    "default": "seguridadsalud-60b15",
+    "seguridad y salud": "seguridadsalud-60b15"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
+}
