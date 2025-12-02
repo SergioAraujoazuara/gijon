@@ -1275,7 +1275,7 @@ const TablaRegistros = () => {
     
       {campo === "observaciones" && (
         <h3 className="w-full bg-sky-600 text-white font-medium rounded-md px-4 py-2 my-4">
-          Observaciones en materia de seguridad y salud
+          Observaciones
         </h3>
       )}
 

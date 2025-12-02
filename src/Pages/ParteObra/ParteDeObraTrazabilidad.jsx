@@ -1183,7 +1183,7 @@ const ParteObra = () => {
                   <h2 className="text-xl font-semibold">
                     Registro de actividades
                   </h2>
-                  <p className="text-gray-500 text-sm">Formulario seguridad y salud</p>
+                  <p className="text-gray-500 text-sm">Formulario</p>
                 </div>
               </div>
               <div className="bg-white border border-gray-200 p-4 rounded-lg shadow-sm">
@@ -1270,7 +1270,7 @@ const ParteObra = () => {
                     />
                   </div>
 
-                  {/* Observaciones en materia seguridad y salud */}
+                  {/* Observaciones */}
                   <h3 className="w-full bg-sky-600 text-white font-medium rounded-md px-4 py-2 my-4">1. Observaciones generales</h3>
                   <div>
                     <label className="mt-4 block bg-gray-200 px-4 py-2 rounded-md text-sm font-medium">

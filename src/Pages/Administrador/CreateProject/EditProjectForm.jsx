@@ -233,7 +233,7 @@ const EditProjectForm = ({
             id="coordinador"
             value={coordinador}
             onChange={(e) => setCoordinador(e.target.value)}
-            placeholder="Coordinador de seguridad y salud"
+            placeholder="Coordinador"
             className="block w-full mb-4 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>

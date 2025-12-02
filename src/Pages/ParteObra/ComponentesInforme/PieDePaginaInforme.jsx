@@ -45,7 +45,7 @@ const PiePaginaInforme = ({ userNombre, firmaEmpresa, firmaCliente, nombreUsuari
         {firmaCliente ? (
           <Image src={firmaCliente} style={styles.signature} />
         ) : (
-          <Text style={styles.text}>Firma no disponible</Text>
+          <Text style={styles.text}></Text>
         )}
       </View>
 
@@ -57,7 +57,7 @@ const PiePaginaInforme = ({ userNombre, firmaEmpresa, firmaCliente, nombreUsuari
         {firmaEmpresa ? (
           <Image src={firmaEmpresa} style={styles.signature} />
         ) : (
-          <Text style={styles.text}>Firma no disponible</Text>
+          <Text style={styles.text}></Text>
         )}
       </View>
 

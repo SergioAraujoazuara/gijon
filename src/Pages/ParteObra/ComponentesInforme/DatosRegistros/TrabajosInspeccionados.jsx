@@ -33,7 +33,7 @@ const TrabajosInspeccionados = ({ dataRegister }) => {
 
   return (
     <View style={styles.fieldRow}>
-       <TituloInforme plantillaSeleccionada="Acta de inspección de coordinación de seguridad y salud" />
+       <TituloInforme plantillaSeleccionada="Acta de inspección de coordinación" />
       <Text style={styles.fieldLabelObservaciones}>{dataRegister.observacionesActividad}</Text>
       <Text style={styles.fieldLabelObservaciones}>{dataRegister.observacionesLocalizacion}</Text>
     </View>

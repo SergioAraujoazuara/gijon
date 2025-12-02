@@ -210,7 +210,7 @@ function Home() {
                 <p className="flex items-center gap-2"><FaClock className="text-sky-700" /> <span className="font-semibold">Plazo de la obra:</span> {projectData.plazo}</p>
                 <p className="flex items-center gap-2"><FaMoneyBillWave className="text-sky-700" /> <span className="font-semibold">Presupuesto de la obra:</span> {projectData.presupuesto}</p>
                 <div className='w-full border-t-2 my-2'></div>
-                <p className="flex items-center gap-2"><FaShieldAlt className="text-sky-700" /> <span className="font-semibold">Coordinador de Seguridad y Salud:</span> {projectData.coordinador}</p>
+                <p className="flex items-center gap-2"><FaShieldAlt className="text-sky-700" /> <span className="font-semibold">Coordinador:</span> {projectData.coordinador}</p>
                 <p className="flex items-center gap-2"><FaUser className="text-sky-700" /> <span className="font-semibold">Director de la obra:</span> {projectData.director}</p>
               </div>
             </div>

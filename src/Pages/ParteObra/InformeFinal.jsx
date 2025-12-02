@@ -173,7 +173,7 @@ const InformeFinal = ({ fechaInicio, fechaFin, formatFechaActual, nombreUsuario,
                         obra={proyecto?.obra || "Nombre de obra"}
                         promotor={proyecto?.promotor || "Nombre promotor"}
                         description={proyecto?.descripcion || "Nombre contratista"}
-                        coordinador={proyecto?.coordinador || "Nombre coordinador de seguridad y salud"}
+                        coordinador={proyecto?.coordinador || "Nombre coordinador"}
                         director={proyecto?.director || "Nombre director de la obra"}
                         rangoFechas={`${registroIndividual?.fechaHora
                             ? new Date(registroIndividual.fechaHora).toLocaleString("es-ES", {

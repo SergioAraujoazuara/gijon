@@ -61,7 +61,7 @@ const EncabezadoInforme = ({
       <View style={styles.line} />
       <Text style={styles.headerLabel}>Promotor: {promotor}</Text>
       <Text style={styles.headerValue}>Contratista: {description}</Text>
-      <Text style={styles.headerValue}>Coordinador de seguridad y salud: {coordinador}</Text>
+      <Text style={styles.headerValue}>Coordinador: {coordinador}</Text>
       <Text style={styles.headerValue}>Director de la obra: {director}</Text>
       <Text style={styles.headerValue}>Fecha: {rangoFechas}</Text>
       
