@@ -12,7 +12,7 @@ import ListaProyectos from './Administrador/ShareTrazabilidadProyectos/ListaProy
 import PhotoUpload from './ParteObra/PhotoUpload';
 
 function Home() {
-  const { user, loading } = useAuth(); // Obtén el usuario y su estado de carga
+  const { user, loading } = useAuth(); // Obtén el usuario y su estado de cargas
   const [userProjects, setUserProjects] = useState([]); // Proyectos del usuario
   const [userName, setUserName] = useState(''); // Nombre del usuario
   const [selectedProject, setSelectedProject] = useState(localStorage.getItem('selectedProjectId') || null); // Inicializa desde localStorage
